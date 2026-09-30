@@ -1621,6 +1621,7 @@ async function setMedia(c, mirror, video) {
         media.autoplay = true;
         media.playsInline = true;
         media.id = 'media-' + c.localId;
+	media.poster = `https://api.dicebear.com/10.x/identicon/svg?seed={encodeURIComponent(c.username)}`;
         div.appendChild(media);
         addCustomControls(media, div, c, !!video);
     }
