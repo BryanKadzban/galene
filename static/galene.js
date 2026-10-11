@@ -34,6 +34,8 @@ let group;
  */
 let serverConnection;
 
+let intentionalClose = false;
+
 /**
  * The group status.  This is set twice, once over HTTP in the start
  * function in order to obtain the WebSocket address, and a second time
@@ -278,6 +280,7 @@ function setConnected(connected) {
         connectionbox.classList.remove('invisible');
         hideVideo();
         window.onresize = null;
+	if (intentionalClose) window.location.reload();
     }
 }
 
@@ -3884,7 +3887,7 @@ document.getElementById('loginform').onsubmit = async function(e) {
     if(!(form instanceof HTMLFormElement))
         throw new Error('Bad type for loginform');
 
-    setVisibility('passwordform', true);
+    // setVisibility('passwordform', true);
 
     if(getInputElement('presentboth').checked)
         presentRequested = 'both';
@@ -3973,6 +3976,7 @@ getSelectElement('test-audioselect').onchange = async function(e) {
 };
 
 document.getElementById('disconnectbutton').onclick = function(e) {
+    intentionalClose = true;
     serverConnection.close();
     closeNav();
 };
@@ -4103,6 +4107,12 @@ async function start() {
 
     if(parms.has('token'))
         token = parms.get('token');
+    else {
+        const m = document.cookie.match(/(?:^|;\s*)session_token=([^;]+)/)?.[1];
+        if(m) token = m;
+    }
+
+    // prompt('TOKEN: ', token);
 
     if(token) {
         await serverConnect();

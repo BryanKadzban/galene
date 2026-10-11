@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
+	"log"
 	"math/big"
 	"net/url"
 	"strings"
@@ -56,7 +57,7 @@ func ParseKey(key map[string]any) (any, error) {
 		if err != nil {
 			return nil, err
 		}
-		if len(k) != length {
+		if len(k) < length {
 			return nil, errors.New("bad length for key")
 		}
 		return k, nil
@@ -216,6 +217,8 @@ func (token *JWT) Check(host, group string) (string, []string, error) {
 	if err != nil {
 		return "", nil, err
 	}
+
+	log.Printf("Checking %q against aud %+v", group, aud)
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
